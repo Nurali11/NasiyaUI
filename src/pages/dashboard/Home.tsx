@@ -1,4 +1,4 @@
-import { CalendarIcon, CashIcon, EyeIcon, PlusIcon } from "../../assets/icons";
+import { CalendarIcon, CashIcon, PlusIcon } from "../../assets/icons";
 import { Heading, Text } from "../../components";
 import { useQuery } from "@tanstack/react-query";
 import { useCookies } from "react-cookie";
@@ -10,6 +10,7 @@ import type { SellerMeType } from "../../@types/SellerType";
 import { Skeleton } from "antd";
 import { Link } from "react-router-dom";
 import { PATH } from "../../hooks/path";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 const Home = () => {
   const [showLimit, setShowLimit] = useState<boolean>(false);
@@ -31,10 +32,6 @@ const Home = () => {
     totalDebt += i.remainedSum
   }
 
-  console.log(totalDebt);
-  
-  console.log(totalDebt);
-  
   return (
     <div className="containers !pt-[30px]">
       <div className="flex items-center justify-between mb-[38px]">
@@ -46,24 +43,24 @@ const Home = () => {
             alt="Avatar img"
             width={40}
             height={40}
-          /> : <Skeleton.Avatar shape={'circle'} active  size={40} />}
+          /> : <Skeleton.Avatar active shape={'circle'}  size={40} />}
           
 
           </div>
           <strong className="font-semibold text-[16px]">
-            {isLoading ? <Skeleton.Input size={"default"} />: sellerData?.name}
+            {isLoading ? <Skeleton.Input active size={"default"} />: sellerData?.name}
           </strong>
         </div>
         <button
           className="bg-[#5F5F5] hover:!border-[#75CDB] calendar-button duration-300 !w-[40px] !text items-center justify-center !p-0 !rounded-[12px] !h-[40px]"
           onClick={() => {}}
         >
-          {!sellerData ? <Skeleton.Node style={{ width: 40, height: 40, borderRadius: 12}} /> : <Link to={PATH.kalendar}><div className="bg-[#F5F5F5] border-[2px] border-[#d9d5d5] cursor-pointer w-[40px] h-[40px] flex items-center rounded-[10px] justify-center"><CalendarIcon /></div></Link> }
+          {!sellerData ? <Skeleton.Node active style={{ width: 40, height: 40, borderRadius: 12}} /> : <Link to={PATH.kalendar}><div className="bg-[#F5F5F5] border-[2px] border-[#d9d5d5] cursor-pointer w-[40px] h-[40px] flex items-center rounded-[10px] justify-center"><CalendarIcon /></div></Link> }
           
         </button>
       </div>
 
-      {!sellerData ? <Skeleton.Node style={{ width: 360, height: 90, marginBottom: 31, borderRadius: 20}} /> : <div className="rounded-[20px] flex justify-center items-center relative bg-[#30AF49] mb-[31px] py-[18px] text-center">
+      {!sellerData ? <Skeleton.Node active style={{ width: 360, height: 90, marginBottom: 31, borderRadius: 20}} /> : <div className="rounded-[20px] flex justify-center items-center relative bg-[#30AF49] mb-[31px] py-[18px] text-center">
         <div className="flex flex-col">
           <strong className="font-bold text-white text-[20px]">
             {showLimit ? "*********" : `${isLoading ? `` : `${formatNumber(totalDebt)} so‘m`}`}
@@ -74,28 +71,28 @@ const Home = () => {
           onClick={() => setShowLimit(!showLimit)}
           className="absolute cursor-pointer duration-300 hover:scale-[1.2] top-0 bottom-0 my-auto right-[22px]"
         >
-          <EyeIcon />
+          <div className="!text-[22px] !text-white">{showLimit ? <EyeInvisibleOutlined /> : <EyeOutlined />}</div>
         </button>
       </div>}
       
       <div className="flex justify-between mb-[40px]">
-        {!sellerData ? <Skeleton.Node style={{ width: 160, height: 120, borderRadius: 16}} /> : <div className="p-[16px] w-[48%] border-[1px] border-[#ECEC] rounded-[16px]">
+        {!sellerData ? <Skeleton.Node active style={{ width: 160, height: 120, borderRadius: 16}} /> : <div className="p-[16px] w-[48%] border-[1px] border-[#ECEC] rounded-[16px]">
           <div className="w-[110px] space-y-[20px]">
             <Text classList="!font-semibold !text-[18px]">Kechiktirilgan to‘lovlar</Text>
             <Text classList="!text-[18px] !text-[#F94D4D]">{sellerData?.Nasiya.length}</Text>
           </div>
         </div>}
 
-        {!sellerData ? <Skeleton.Node style={{ width: 160, height: 120, borderRadius: 16}} /> : <div className="p-[16px] w-[48%] border-[1px] border-[#ECEC] rounded-[16px]">
+        {!sellerData ? <Skeleton.Node active style={{ width: 160, height: 120, borderRadius: 16}} /> : <div className="p-[16px] w-[48%] border-[1px] border-[#ECEC] rounded-[16px]">
           <div className="w-[110px] space-y-[20px]">
-            <Text classList="!font-semibold !text-[18px]">Mijozlar soni</Text>
+            <Text classList="!font-semibold !text-[18px]">Mijozlar soni <br /> <br /></Text>
             <Text classList="!text-[18px] !text-[#30AF49]">{sellerData?.Debtor.length}</Text>
           </div>
         </div>}
 
       </div>
 
-      {!sellerData ? <Skeleton.Node style={{ width: 340, height: 150, borderRadius: 16}}/>: 
+      {!sellerData ? <Skeleton.Node active style={{ width: 360, height: 150, borderRadius: 16}}/>: 
       <>
       <div className="mb-[20px]">
         <Heading tag="h2" children="Hamyoningiz" classList="!text-[18px] !font-semibold !mb-[20px]"/>

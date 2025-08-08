@@ -12,6 +12,7 @@
     animation-direction: alternate-reverse;
     transition: all 1s;
 }
+
 .logo-icon{
     animation-name: logo;
     animation-duration: 1s;
@@ -46,4 +47,46 @@
   .bottom-text {
     opacity: 0% !important;
   }
+}
+.ant-picker-content>thead>tr>th {
+    padding-bottom: 10px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+.ant-picker-content>tbody>tr>.ant-picker-cell-in-view>.ant-picker-cell-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    width: 48px !important;
+    height: 48px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    background-color: #F6F6F6 !important;
+    border: 1px solid var(--Stroke-color, #EDEDED) !important;
+    border-radius: 8px !important;
+}
+
+.ant-picker-content>tbody>tr>.ant-picker-cell-selected>.ant-picker-cell-inner {
+    color: #78A5FA !important;
+    border: 1px solid var(--Primary-Primary400, #78A5FA) !important;
+    background: var(--Primary-Primary400, #DDE9FE) !important;
+}
+
+.hide-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.custom-calendar .ant-picker-calendar-date-content {
+    min-height: 80px;
+}
+
+.ant-picker-content thead {
+    display: none;
 }

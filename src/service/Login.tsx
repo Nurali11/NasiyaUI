@@ -8,7 +8,7 @@ export const Login = (data: {username: string, password: string}, setCookies:any
             toast.success("Logged In")
             setCookies("token", res.data.token)
             location.pathname = "/"
-        }, 700)
+        }, 200)
     }).catch(err => {
         setTimeout(() => {
             toast.error(err.response.data.message)

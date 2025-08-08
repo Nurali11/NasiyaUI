@@ -3,8 +3,8 @@ import type { StatisticProps } from 'antd';
 import { Col, Row, Statistic } from 'antd';
 import CountUp from 'react-countup';
 
-const formatter: StatisticProps['formatter'] = (value) => (
-  <CountUp end={value as number} separator="," />
+export const formatter: StatisticProps['formatter'] = (value) => (
+  <CountUp end={value as number} separator=" " />
 );
 
 const App: React.FC = () => (
