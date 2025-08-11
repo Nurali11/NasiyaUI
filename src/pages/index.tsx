@@ -3,7 +3,6 @@ import LoginHome from "./auth/Home"
 import Home from "./dashboard/Home"
 
 const Login = lazy(() => new Promise((resolve:any) => {
-    resolve(import("./auth/Login"))
     return setTimeout(() => resolve(import("./auth/Login")), 1500)
 }))
 

@@ -1,4 +1,7 @@
 @import "tailwindcss";
+* {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
 .containers{
     max-width: 400px;
     margin: 0 auto;
@@ -12,6 +15,7 @@
     animation-direction: alternate-reverse;
     transition: all 1s;
 }
+
 .logo-icon{
     animation-name: logo;
     animation-duration: 1s;
@@ -46,4 +50,111 @@
   .bottom-text {
     opacity: 0% !important;
   }
+}
+.calendar .ant-picker-content>thead>tr>th {
+    padding-bottom: 10px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+.calendar .ant-picker-content>tbody>tr>.ant-picker-cell-in-view>.ant-picker-cell-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    width: 48px !important;
+    height: 48px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    background-color: #F6F6F6 !important;
+    border: 1px solid var(--Stroke-color, #EDEDED) !important;
+    border-radius: 8px !important;
+}
+
+.calendar .ant-picker-content>tbody>tr>.ant-picker-cell-selected>.ant-picker-cell-inner {
+    color: #78A5FA !important;
+    border: 1px solid var(--Primary-Primary400, #78A5FA) !important;
+    background: var(--Primary-Primary400, #DDE9FE) !important;
+}
+
+.hide-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.custom-calendar .ant-picker-calendar-date-content {
+    min-height: 80px;
+}
+
+.ant-picker-content thead {
+    display: none;
+}
+.filter-wrapper:hover>.filter-popup {
+    height: 60px;
+    padding: 8px;
+}
+
+.ant-upload-select,
+.ant-upload-list-item {
+    border: 1px solid #EDEDED !important;
+    width: 150px !important;
+    height: 112px !important;
+}
+
+.ant-form-item-required,
+label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+}
+
+.ant-form-item-required::before {
+    color: black !important;
+}
+
+.debtor-single>.ant-popover-content {
+    border-radius: 16px !important;
+}
+
+.ant-modal-title {
+    font-size: 18px !important;
+}
+
+.menu-hide {
+    display: none !important;
+}
+
+.menu-hide .main {
+    height: 100% !important;
+}
+
+.date .anticon {
+    color: #3478F7 !important;
+    font-size: 18px !important;
+}
+
+.date .ant-picker,
+.ant-select-selector {
+    background-color: #F6F6F6 !important;
+}
+
+.date .ant-picker-input input {
+    font-size: 18px !important;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.ant-select-selector {
+    font-size: 18px !important;
+    height: 38px !important;
+    padding-bottom: 2px;
+}
+
+.ant-input {
+    background-color: #F6F6F6;
+    font-size: 16px !important;
+    padding: 8px 12px !important;
 }
