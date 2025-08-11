@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Flex } from 'antd';
+import { Form, Input, Flex } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useFormik } from 'formik';
 import { LoginSchema } from '../validation/Login';
 import { Login } from '../service/Login';
 import { useCookies } from 'react-cookie';
 import imgloading from "../assets/images/loading.png"
+import CustomButton from './Button';
 
 const LoginForm: React.FC = () => {
     const [_, setCookies] = useCookies(["token"])
@@ -34,12 +35,12 @@ const LoginForm: React.FC = () => {
 
   return (
     <Form style={{ maxWidth: 360 }} onFinish={formik.handleSubmit}>
-      <Form.Item
+      <Form.Item className='bg-white'
         validateStatus={formik.touched.username && formik.errors.username ? 'error' : ''}
         help={formik.touched.username && formik.errors.username}
       >
         <Input
-          className="!text-[16px] !py-[5px]"
+          className="!text-[16px] !py-0"
           name="username"
           placeholder="Login"
           prefix={<UserOutlined />}
@@ -54,7 +55,7 @@ const LoginForm: React.FC = () => {
         help={formik.touched.password && formik.errors.password}
       >
         <Input.Password
-          className="!text-[16px] !py-[5px]"
+          className="!text-[16px] !py-0"
           name="password"
           placeholder="Parol"
           prefix={<LockOutlined />}
@@ -77,17 +78,12 @@ const LoginForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item>
-        <Button
-          className={`!text-[18px] !h-[50px] !rounded-[10px] !py-[13px] ${
-        isDisabled ? '!bg-[#DDE9FE] !border-none !text-white' : ''
-          }`}
-          type="primary"
-          htmlType="submit"
-          block
-          disabled={isDisabled}
+        <CustomButton
+          classList={``}
+          isDisabled={isDisabled}
         >
           {loading ? <img src={imgloading} width={30} height={30}/> : "Kirish"}
-        </Button>
+        </CustomButton>
       </Form.Item>
     </Form>
   );

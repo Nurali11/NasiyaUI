@@ -1,9 +1,9 @@
 import type { FC } from "react"
 import type { TextType } from "../@types/TextType"
 
-const Text:FC<TextType> = ({classList, children}) => {
+const Text:FC<TextType> = ({classList, children, onClick}) => {
   return (
-    <p className={`${classList} font-medium text-[16px]`}>{children}</p>
+    <p onClick={onClick} className={`${classList} font-medium text-[16px]`}>{children}</p>
   )
 }
 

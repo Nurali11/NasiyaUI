@@ -55,7 +55,7 @@ const Home = () => {
           className="bg-[#5F5F5] hover:!border-[#75CDB] calendar-button duration-300 !w-[40px] !text items-center justify-center !p-0 !rounded-[12px] !h-[40px]"
           onClick={() => {}}
         >
-          {!sellerData ? <Skeleton.Node active style={{ width: 40, height: 40, borderRadius: 12}} /> : <Link to={PATH.kalendar}><div className="bg-[#F5F5F5] border-[2px] border-[#d9d5d5] cursor-pointer w-[40px] h-[40px] flex items-center rounded-[10px] justify-center"><CalendarIcon /></div></Link> }
+          {!sellerData ? <Skeleton.Node active style={{ width: 40, height: 40, borderRadius: 12}} /> : <Link to={PATH.kalendar}><div className="bg-[#F5F5F5] border-[2px] border-[#d9d5d5] cursor-pointer w-[40px] h-[40px] flex items-center rounded-[10px] justify-center text-[#735CD8]"><CalendarIcon /></div></Link> }
           
         </button>
       </div>
@@ -100,7 +100,7 @@ const Home = () => {
           <div className="flex items-center gap-[10px]">
             <div className="bg-[#735CD81A] w-[50px] h-[50px] flex items-center justify-center rounded-full"><CashIcon/></div>
             <div className="text-start">
-              <Text classList="!text-[13px]">Hisobingizda</Text>
+              <Text classList="!text-[16px]">Hisobingizda</Text>
               <Heading tag="h2" children={`${formatNumber(sellerData?.balance)} so'm`} classList="!font-bold !text-[24px]"/>
             </div>
         </div>
@@ -108,7 +108,7 @@ const Home = () => {
         </div>
       </div>
       <div className="flex justify-between">
-        <Text classList="text-[14px] !font-medium">Buy uchun to'lov</Text>
+        <Text classList="text-[14px] !font-medium">Bu oy uchun to'lov</Text>
         <Text classList="text-[14px] !font-semibold text-[#30AF49]">To'lov qilingan</Text>
       </div>
       </>}

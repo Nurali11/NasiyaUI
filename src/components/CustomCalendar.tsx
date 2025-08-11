@@ -35,7 +35,7 @@ const uzWeekDays = ['YA', 'DU', 'SE', 'CH', 'PA', 'JU', 'SH'];
 
 
   return (
-    <div style={wrapperStyle}>
+    <div style={wrapperStyle} className='calendar'>
       <Calendar
         onChange={handleChooseDay}
         fullscreen={false}
@@ -54,7 +54,7 @@ const uzWeekDays = ['YA', 'DU', 'SE', 'CH', 'PA', 'JU', 'SH'];
                 </div>
               </div>
               <div className="flex items-center justify-between my-[20px]">
-                <Text classList="!font-semibold">Oylik jami:</Text>
+                <Text classList="!font-medium !text-[20px]">Oylik jami:</Text>
                 <strong className="text-[20px] font-bold">{formatNumber(totalForMonth)} <span className="font-medium">so‘m</span></strong>
               </div>
               <div className="grid grid-cols-7 gap-1 text-center font-semibold my-[10px]">

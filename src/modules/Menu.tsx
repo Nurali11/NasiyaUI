@@ -4,7 +4,7 @@ import { PATH } from "../hooks/path";
 
 const Menu = () => {
   return (
-    <div className="border-t-[1px] h-[10%] border-t-[#ECECEC] p-[10px]">
+    <div id="menu" className="border-t-[1px] h-[10%] border-t-[#ECECEC] p-[10px]">
       <div className="containers">
         <div className="flex items-center justify-between">
           <NavLink to={PATH.main} className="flex flex-col items-center justify-center space-y-[3px] text-[#637D92]">
