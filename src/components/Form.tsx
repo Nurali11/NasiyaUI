@@ -7,6 +7,7 @@ import { Login } from '../service/Login';
 import { useCookies } from 'react-cookie';
 import imgloading from "../assets/images/loading.png"
 import CustomButton from './Button';
+import { LoginIcon } from '../assets/icons';
 
 const LoginForm: React.FC = () => {
     const [_, setCookies] = useCookies(["token"])
@@ -43,7 +44,7 @@ const LoginForm: React.FC = () => {
           className="!text-[16px] !py-0"
           name="username"
           placeholder="Login"
-          prefix={<UserOutlined />}
+          prefix={<LoginIcon />}
           value={formik.values.username}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -68,10 +69,7 @@ const LoginForm: React.FC = () => {
       <Form.Item>
         <Flex justify="space-between" align="center">
           <div></div>
-          <a
-            className="border-b-[1px] border-b-[#3478F7] font-semibold"
-            href="#"
-          >
+          <a className="border-b-[1px] border-b-[#3478F7] font-semibold" href="/forget">
             Parolni unutdingizmi?
           </a>
         </Flex>

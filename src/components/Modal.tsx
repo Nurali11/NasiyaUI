@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
 import Text from './Text';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { instance } from '../hooks/instance';
 import toast from 'react-hot-toast';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { PATH } from '../hooks/path';
 
-const CustomModal: React.FC<{open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, url: string}> = ({open, setOpen, url}) => {
-  const [modalText, setModalText] = useState('O‘chirishni tasdiqlaysizmi?');
+const CustomModal: React.FC<{open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, url: string, queryKey?: string, title?: string}> = ({open, setOpen, url, queryKey, title}) => {
+  const [modalText, setModalText] = useState(title || 'O‘chirishni tasdiqlaysizmi?');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [cookies] = useCookies(['token'])
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  
   const deleteMutation = useMutation({
-    mutationFn: () => instance.delete(url),
+    mutationFn: () => instance.delete(url, { headers: { Authorization: `Bearer ${cookies.token}` } }),
     onSuccess: () => {
-        navigate(PATH.debtor)
+        queryClient.invalidateQueries()
         toast.success("Muvaffaqiyatli o‘chirildi");
     },
     onError: (err: any) => {
@@ -27,6 +30,7 @@ const CustomModal: React.FC<{open: boolean, setOpen: React.Dispatch<React.SetSta
     setLoading(true)
     setTimeout(() => {
         deleteMutation.mutate();
+        navigate(-1)
     },800)
   };
 
@@ -36,6 +40,7 @@ const CustomModal: React.FC<{open: boolean, setOpen: React.Dispatch<React.SetSta
       open={open}
       onOk={handleDeleteClick}
       okType='danger'
+      cancelText='Bekor qilish'
       okText='O‘chirish'
       confirmLoading={loading}
       onCancel={() => setOpen(false)}

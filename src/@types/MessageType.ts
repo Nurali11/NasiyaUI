@@ -1,4 +1,4 @@
-import type { SellerType, SingleDebtorType } from "./SingleDebtor"
+import type { SingleDebtorType } from "./SingleDebtorType"
 
 export interface SingleMessageType {
       id: string,

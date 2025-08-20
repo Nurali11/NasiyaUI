@@ -78,8 +78,8 @@
 }
 
 .hide-scroll {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
 }
 
 .hide-scroll::-webkit-scrollbar {
@@ -157,4 +157,23 @@ label {
     background-color: #F6F6F6;
     font-size: 16px !important;
     padding: 8px 12px !important;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+:where(.css-dev-only-do-not-override-1vjf2v5).ant-switch.ant-switch-checked {
+    background-color: #735CD8 !important;
 }

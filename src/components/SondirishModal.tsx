@@ -5,11 +5,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { instance } from "../hooks/instance";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import type { DebtType } from "../@types/SingleDebtor";
+import type { DebtType } from "../@types/SingleDebtorType";
 import Text from "./Text";
 import CustomButton from "./Button";
 import { useCookies } from "react-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "antd";
 import { CheckedIcon } from "../assets/icons";
 
@@ -24,6 +24,7 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
     const [cookies] = useCookies(["token"]);
     const [amount, setAmount] = useState("");
     const [err, setErr] = useState("");
+    const [show, setShow] = useState(false);
     const queryClient = useQueryClient();
     const [months, setMonths] = useState<{ period: number; sum: number }[]>([]);
 
@@ -33,9 +34,14 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
         months: "To‘lov muddatini tanlang"
     }
 
+    useEffect(() => {
+    const t = setTimeout(() => setShow(true), 10);
+    return () => clearTimeout(t);
+  }, []);
+
     const {data: item} = useQuery<DebtType>({
         queryKey: ['debt-sondirish'],
-        queryFn: () => instance.get(`/debt/${id}`).then(res => res.data).catch(err => {return toast.error(err.response.data.message)}),
+        queryFn: () => instance.get(`/debt/${id}`, {headers: { Authorization: `Bearer ${cookies.token}` }}).then(res => res.data).catch(err => {return toast.error(err.response.data.message)}),
     })
     
     function handlePayment() {
@@ -54,7 +60,10 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
         setModal(false)
     }
 
-
+    const closeModal = () => {
+    setShow(false);
+    setTimeout(() => setModal(false), 300);
+  };
 
     function handleAmount(e: any) {
         let rem = item?.remainedSum || 0
@@ -91,11 +100,7 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
     )
 
 const toggleMonth = (m: any) => {
-  setMonths(prev =>
-    prev.find(x => x.period === m.period)
-      ? prev.filter(x => x.period !== m.period)
-      : [...prev, { period: m.period, sum: m.sum }]
-  );
+  setMonths(prev =>prev.find(x => x.period === m.period) ? prev.filter(x => x.period !== m.period): [...prev, { period: m.period, sum: m.sum }]);
 };
 
 const selectAll = () => {
@@ -108,7 +113,7 @@ const selectAll = () => {
 };
 
 const monthsContent = (
-    <div className="flex flex-col h justify-between h-[90%]">
+    <div className="flex flex-col  justify-between h-[90%]">
         <div className="">
             <div className="flex justify-between items-center border-b-[1px] border-b-[#b8b6b6] pb-[15px]">
             <div>
@@ -125,11 +130,11 @@ const monthsContent = (
                 return (
                     <div key={item.period} className="flex justify-between items-center py-[10px] border-b border-[#ECECEC]">
                     <div>
-                        <Text>{item.period}-oy</Text>
-                        <Text>{item.endDate}</Text>
+                        <Text classList="!text-[13px]">{item.period}-oy</Text>
+                        <Text classList="!text-[14px] !font-semibold">{item.endDate}</Text>
                     </div>
                     <div className="flex gap-[10px]" >
-                        <div>{item.sum} so'm</div>
+                        <div className="!font-semibold">{item.sum} so'm</div>
                         <div onClick={() => toggleMonth(item)} className={`${isChecked ? "border-[#30AF49]" : "border-[#dedbdb]" } flex items-center cursor-pointer justify-center rounded-[5px] border-[2px] w-[20px] h-[20px]`}>
                         {isChecked && <div className="mt-[2px]"><CheckedIcon /></div>}
                         </div>
@@ -148,18 +153,20 @@ const monthsContent = (
 
 
 
-    console.log(months);
     
     return (
-    <div className='fixed z-[11] inset-0 backdrop-filter bg-black/40 backdrop-blur-[4px] flex items-end justify-center'>
-        <div className={`bg-white space-y-[30px] ${type == "months" && "h-[550px]"} w-[400px] h-[400px] rounded-t-[20px] relative p-[20px]`}>
-            <div onClick={() => setModal(false)}  className="bg-white cursor-pointer rounded-full absolute w-[40px] h-[40px] flex items-center justify-center top-[-50px] !text-[20px] right-0"><CloseOutlined/></div>
-            <Heading tag="h1" classList="!font-bold !text-[20px]" children={heading[type]}/>
-            {type === "next" && nextContent}
-            {type === "any" && anyContent}
-            {type === "months" && monthsContent}
-        </div>
+        <div className={`fixed z-[11] inset-0 backdrop-filter bg-black/40 backdrop-blur-[4px] flex items-end justify-center transition-opacity duration-300${show ? "opacity-100" : "opacity-0"}`}>
+  <div className={`bg-white space-y-[30px] ${type == "months" ? "h-[550px]" : "h-[400px]"}  w-[400px] rounded-t-[20px] relative p-[20px]  transform transition-all duration-300 ${show ? "translate-y-0" : "translate-y-full"}`}>
+    <div onClick={closeModal} className="bg-white cursor-pointer rounded-full absolute w-[40px] h-[40px] flex items-center justify-center top-[-50px] !text-[20px] right-0">
+      <CloseOutlined />
     </div>
+    <Heading tag="h1" classList="!font-bold !text-[20px]" children={heading[type]} />
+    {type === "next" && nextContent}
+    {type === "any" && anyContent}
+    {type === "months" && monthsContent}
+  </div>
+</div>
+
   )
 }
 

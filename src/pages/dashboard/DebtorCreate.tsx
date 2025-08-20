@@ -11,12 +11,13 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATH } from "../../hooks/path";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { SingleDebtorType } from "../../@types/SingleDebtor";
+import type { SingleDebtorType } from "../../@types/SingleDebtorType";
 
 const DebtorCreate = () => {
   const {id} = useParams();
   const [cookies] = useCookies(["token"]);
   const [phones, setPhones] = useState([""]);
+  const [loading, setLoading] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [imgNames, setImgNames] = useState<string[]>([]);
   const [form] = Form.useForm();
@@ -28,7 +29,7 @@ const DebtorCreate = () => {
   const { data } = useQuery<SingleDebtorType>({
   queryKey: ['single-debtor', id],
   queryFn: () => instance
-    .get(`/debtor/${id}`)
+    .get(`/debtor/${id}`, {headers: {Authorization: `Bearer ${cookies.token}`,}})
     .then(res => res.data)
     .catch(err => toast.error(err.response.data.message)),
   enabled: location.pathname.includes("/update") && !!id
@@ -70,15 +71,20 @@ useEffect(() => {
 
   const onFinish = (values: any) => {
     const data = {
-      fullname: values.fullname || "",
+      name: values.fullname || "",
       address: values.address || "",
       phoneNumbers: values.phoneNumbers || [],
       comment: values.comment || "",
       images: imgNames || [],
     };
     console.log(data);
+
+    if(id){
+      instance.patch(`/debtor/${id}`, data, {headers: {Authorization: `Bearer ${cookies.token}`,},}).then((_res) => { toast.success("Debtor Updated!"); queryClient.invalidateQueries({ queryKey: ["debt-history"] }); navigate(PATH.debtor); }).catch((err) => {toast.error(err.response.data.message);});
+    }else{
+      instance.post("/debtor", data, {headers: {Authorization: `Bearer ${cookies.token}`,},}).then((_res) => { toast.success("Debtor Created!"); queryClient.invalidateQueries({ queryKey: ["debt-history"] }); navigate(PATH.debtor); }).catch((err) => {toast.error(err.response.data.message);});
+    }
     
-    instance.post("/debtor", data, {headers: {Authorization: `Bearer ${cookies.token}`,},}).then((_res) => { toast.success("Debtor Created!"); queryClient.invalidateQueries({ queryKey: ["debt-history"] }); navigate(PATH.debtor); }).catch((err) => {toast.error(err.response.data.message);});
   };
 
   return (
@@ -162,11 +168,11 @@ useEffect(() => {
         )}
 
         <Form.Item label="Rasm biriktirish">
-          <UploadImg setImgNames={setImgNames} />
+          <UploadImg imgNames={imgNames} setImgNames={setImgNames} />
         </Form.Item>
 
         <Form.Item>
-          <CustomButton type="submit" isDisabled={!isFormValid}>
+          <CustomButton onClick={() => setLoading(true)} isLoading={loading} type="submit" isDisabled={!isFormValid}>
             Saqlash
           </CustomButton>
         </Form.Item>

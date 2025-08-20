@@ -10,10 +10,12 @@ import { formatNumber } from "../../hooks/formatNumber"
 import FilterModal from "../../components/FilterModal"
 import { useNavigate } from "react-router-dom"
 import { PATH } from "../../hooks/path"
+import { useCookies } from "react-cookie"
 
 const Debtor = () => {
     const [searchValue, setSearchValue] = useState("")
     const [search, setSearch] = useState("")
+    const [cookies] = useCookies(['token'])
     const [showFilter, setShowFilter] = useState(false)
     const [filterType, setFilterType] = useState("name")
     const [sortOrder, setSortOrder] = useState("asc")
@@ -28,7 +30,7 @@ const Debtor = () => {
     let { data: debtorsList, isLoading } = useQuery({
         queryKey: ['debt-history'],
         queryFn: () =>
-            instance.get("/debtor").then((res: any) => res.data.data).catch((err: any) => {
+            instance.get("/debtor", { headers: { Authorization: `Bearer ${cookies.token}` } }).then((res: any) => res.data.data).catch((err: any) => {
                 if (err.response?.status === 401) {
                     toast.error(err.response.data.message)
                 }
@@ -37,7 +39,7 @@ const Debtor = () => {
 
     const { mutate: updateStar } = useMutation({
         mutationFn: (data: {id: number, star: boolean}) => 
-            instance.patch(`/debtor/${data.id}`, { star: data.star }),
+            instance.patch(`/debtor/${data.id}`, { star: data.star }, { headers: { Authorization: `Bearer ${cookies.token}` } }),
         onMutate: async (data) => {
             await queryClient.cancelQueries({ queryKey: ['debt-history'] })
             const previousData = queryClient.getQueryData(['debt-history'])
@@ -54,9 +56,7 @@ const Debtor = () => {
             queryClient.setQueryData(['debt-history'], context?.previousData)
             toast.error("Xatolik yuz berdi")
         },
-        onSuccess: () => {
-            toast.success("Yulduzcha holati o'zgartirildi")
-        }
+        onSuccess: () => {}
     })
 
     if (search) {
@@ -72,33 +72,22 @@ const Debtor = () => {
         })
     }
     function handleSingleDebtor(id: string){
-    queryClient.invalidateQueries({queryKey: ["single-debtor"]})
+    queryClient.invalidateQueries({queryKey: ["single-debtor", id]})
     navigate(`${id}`)
   }
 
-    return (
-        <div className={`containers !pt-[30px] space-y-[30px] relative`}>
-            <div className="flex justify-center items-center gap-[15px] relative">
-                <Input
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    className="!bg-[#F6F6F6] !p-[10px] !font-medium !py-0 !text-[18px] !text-[#1A1A1A99]"
-                    prefix={<SearchIcon />}
-                    placeholder="Mijoz qidirish..."
-                />
+  console.log(debtorsList);
+  
 
+    return (
+        <div className={`containers space-y-[30px] relative`}>
+            <div className="flex sticky top-[0] !pt-[30px] !pb-[15px] z-50 !bg-white justify-center items-center gap-[15px]">
+                <Input onChange={(e) => setSearchValue(e.target.value)} className="!bg-[#F6F6F6] !p-[10px] !font-medium !py-0 !text-[18px] !text-[#1A1A1A99]" prefix={<SearchIcon />} placeholder="Mijoz qidirish..."/>
                 <div className="relative">
                     <div className="cursor-pointer" onClick={() => setShowFilter(prev => !prev)}>
                         <FilterIcon />
                     </div>
-
-                    <FilterModal
-                        show={showFilter}
-                        setShow={setShowFilter}
-                        filterType={filterType}
-                        setFilterType={setFilterType}
-                        sortOrder={sortOrder}
-                        setSortOrder={setSortOrder}
-                    />
+                    <FilterModal show={showFilter} setShow={setShowFilter} filterType={filterType} setFilterType={setFilterType} sortOrder={sortOrder} setSortOrder={setSortOrder}/>
                 </div>
             </div>
 
@@ -119,10 +108,8 @@ const Debtor = () => {
                                         {item.Phone[0].phone || "-----"}
                                     </Text>
                                 </div>
-                                <div onClick={() => updateStar({ id: item.id, star: !item.star })}>
-                                    {item.star
-                                        ? <StarFilled className="!text-[#FFA800] !text-[20px]" />
-                                        : <StarOutlined className="!text-[#b5b5b5] !text-[20px]" />}
+                                <div onClick={(e) => {e.stopPropagation();updateStar({ id: item.id, star: !item.star })}}>
+                                    {item.star ? <StarFilled className="!text-[#FFA800] !text-[20px]" /> : <StarOutlined className="!text-[#b5b5b5] !text-[20px]" />}
                                 </div>
                             </div>
                             <div >

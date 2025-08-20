@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button as ButtonAnt } from 'antd'
-const CustomButton = ({isDisabled, children, classList, onClick}: {isDisabled?: boolean, children: React.ReactNode, classList?: string, type?: string, onClick?: () => void}) => {
+import img from '../assets/images/loading.png'
+const CustomButton = ({isDisabled, children, classList, onClick, isLoading}: {isDisabled?: boolean, children: React.ReactNode, classList?: string, type?: string, onClick?: () => void, isLoading?: boolean}) => {
   return (
     <ButtonAnt
           onClick={onClick}
@@ -9,7 +10,7 @@ const CustomButton = ({isDisabled, children, classList, onClick}: {isDisabled?: 
           htmlType={"submit"}
           block
           disabled={isDisabled || false}
-        >{children}</ButtonAnt>
+        >{isLoading && (<img src={img} className="w-[20px] h-[20px]"/>)} {children}</ButtonAnt>
   )
 }
 

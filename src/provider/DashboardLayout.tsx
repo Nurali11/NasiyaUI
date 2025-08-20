@@ -6,13 +6,16 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
     const location = useLocation();
   const [showMenu, setShowMenu] = useState(true);
   useEffect(() => {
-    const arr = ["/debtor/", "/debt/create"]
-
-    if (arr.includes(location.pathname)) {
-      setShowMenu(false);
-    }else{
-      setShowMenu(true)
+    const arr = ["/debtor/", "/debt/", "/kalendar","/hisobot/message", "/namuna"]
+    console.log(location.pathname);
+    
+    for (let i of arr) {
+      if (location.pathname.includes(i)) {
+        setShowMenu(false);
+        return
+      }
     }
+    setShowMenu(true);
   }, [location]);
 
   return (

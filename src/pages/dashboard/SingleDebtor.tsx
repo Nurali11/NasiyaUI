@@ -2,10 +2,10 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Heading, Text } from "../../components"
 import {  ArrowLeft, PlusIcon } from "../../assets/icons"
 import { useCookies } from "react-cookie"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { instance } from "../../hooks/instance"
 import toast from "react-hot-toast"
-import type { NasiyaType, SingleDebtorType } from "../../@types/SingleDebtor"
+import type { NasiyaType, SingleDebtorType } from "../../@types/SingleDebtorType"
 import { MoreOutlined, StarFilled, StarOutlined } from "@ant-design/icons"
 import { Button, Popover, Skeleton } from "antd"
 import { formatNumber } from "../../hooks/formatNumber"
@@ -20,8 +20,8 @@ const SingleDebtor = () => {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const navigate = useNavigate()
     const {data: singleDebtor, isLoading} = useQuery<SingleDebtorType>({
-        queryKey: ['single-debtor'],
-        queryFn: () => instance.get(`/debtor/${id}`).then(res => res.data).catch(err => {return toast.error(err.response.data.message)}),
+        queryKey: ['single-debtor', id],
+        queryFn: () => instance.get(`/debtor/${id}`, {headers: { Authorization: `Bearer ${_cookies.token}` }}).then(res => res.data).catch(err => {return toast.error(err.response.data.message)}),
     })
     
     const content = (
@@ -44,6 +44,30 @@ const SingleDebtor = () => {
         return percent
     }
 
+    const { mutate: updateStar } = useMutation({
+  mutationFn: (data: { id: string; star: boolean }) =>
+    instance.patch(`/debtor/${data.id}`, { star: data.star }, {headers: {Authorization: `Bearer ${_cookies.token}`,}}),
+
+  onMutate: async (data) => {
+    await queryClient.cancelQueries({ queryKey: ["single-debtor", id] })
+    const previousData = queryClient.getQueryData(["single-debtor", id])
+    queryClient.setQueryData(["single-debtor", id], (old: any) =>
+      old ? { ...old, star: data.star } : old
+    )
+
+    return { previousData }
+  },
+
+  onError: (err, variables, context) => {
+    queryClient.setQueryData(["single-debtor", id], context?.previousData)
+    toast.error("Xatolik yuz berdi")
+  },
+
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["single-debtor", id] })
+  },
+})
+
     function getDateAndTime(startDate: string, ISO: string) {
   const monthsUz = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun","Iyl", "Avg", "Sentabr", "Oktabr", "Nov", "Dek"];
 
@@ -54,12 +78,11 @@ const SingleDebtor = () => {
 
   return `${monthsUz[Number(month) - 1]} ${day}, ${year} ${hours}:${minutes}`;
 }
-
     return (
     <div className='containers !pt-[30px] space-y-[20px] !h-[100%]'>
         {isLoading ? <div>
             <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "50px", borderRadius: "16px" }}/>
-            <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "100px", borderRadius: "16px" }}/>
+            <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "50px", borderRadius: "16px" }}/>
         </div>  : 
         <div className='flex sticky justify-between z-10 top-[1px] bg-white'>
             <div className="flex gap-[15px]">
@@ -67,14 +90,18 @@ const SingleDebtor = () => {
                 <Heading classList='!text-[18px] !font-semibold' tag='h2' children={singleDebtor?.name}/>
             </div>
             <div className="flex gap-[20px]">
-                <button className="cursor-pointer">{singleDebtor?.star ? <StarFilled className="!text-[#FFA800] !text-[20px]" /> : <StarOutlined className="!text-[#b5b5b5] !text-[20px]" />}</button>
+                <button onClick={(e) => {e.stopPropagation();updateStar({ id: singleDebtor?.id || "0" , star: !singleDebtor?.star })}} className="cursor-pointer">{singleDebtor?.star ? <StarFilled className="!text-[#FFA800] !text-[20px]" /> : <StarOutlined className="!text-[#b5b5b5] !text-[20px]" />}</button>
                 <Popover className="" open={popoverOpen} onOpenChange={(open) => setPopoverOpen(open)} placement="bottomRight" content={content} trigger="click">
                     <button className="duration-300 hover:scale-[1.1] cursor-pointer"><MoreOutlined className="scale-[1.2]"/></button>
                 </Popover>
             </div>
         </div>}
         
-        {isLoading ? <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "413px", borderRadius: "16px" }}/> :
+        {isLoading ? <div>
+            <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "150px", borderRadius: "16px" }}/>
+            <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "150px", borderRadius: "16px" }}/>
+            <Skeleton.Node active style={{ width: "370px", marginBottom:"10px", height: "143px", borderRadius: "16px" }}/>
+        </div> :
         <div className="space-y-[25px] h-[80%]">
             <div className="space-y-[20px]">
                 <div className="bg-[#BBD2FC] rounded-[20px] w-full px-[16px] py-[18px]">
@@ -104,7 +131,7 @@ const SingleDebtor = () => {
             </div>
         </div>
         }
-        {modal && <CustomModal url={`/debtor/${singleDebtor?.id}`} open={modal} setOpen={setModal}/>}
+        {modal && <CustomModal title={singleDebtor?.Nasiya.length || 0 > 0 ? `Bu mijozning ${singleDebtor?.Nasiya.length || 0} ta nasiyasi bor.O‘chirishni tasdiqlaysizmi?`  : "O‘chirishni tasdiqlaysizmi"} url={`/debtor/${singleDebtor?.id}`} open={modal} setOpen={setModal} queryKey="debt-history"/>}
         
             <Button onClick={() => {
                 navigate(`debtCreate`)

@@ -13,11 +13,15 @@ import { useNavigate } from "react-router-dom";
 const Calendar = () => {
     const queryClient = useQueryClient();
     const [nowDate, setNowDate] = useState<dayjs.Dayjs | undefined>();
+    const [cookies] = useCookies(['token'])
     const navigate = useNavigate();
     const [,,removeCookies] = useCookies(['token']);
     const { data: debtsList, isLoading } = useQuery(({
         queryKey: ['debt-history', nowDate],
         queryFn: () => instance.get("/debt/date", {
+            headers: {
+                Authorization: `Bearer ${cookies.token}`
+            },
           params: {
                 endDate: nowDate ? `${((nowDate as any)?.$D).toString().padStart(2, '0')}.${((nowDate as any)?.$M + 1).toString().padStart(2, '0')}.${(nowDate as any)?.$y}` : 0
             }
@@ -30,9 +34,6 @@ const Calendar = () => {
             }
         })
     }))
-
-    console.log(debtsList);
-    
 
     return (
         <>

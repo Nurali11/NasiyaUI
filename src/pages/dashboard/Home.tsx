@@ -38,7 +38,7 @@ const Home = () => {
         <div className="flex gap-[15px] items-center">
           <div>
             {sellerData?.image ? <img
-            className="rounded-full w-[40px] h-[40px]"
+            className="rounded-full w-[40px] h-[40px]" 
             src={`${API}uploads/${sellerData?.image}`}
             alt="Avatar img"
             width={40}
