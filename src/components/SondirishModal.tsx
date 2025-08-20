@@ -11,7 +11,7 @@ import CustomButton from "./Button";
 import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import { Input } from "antd";
-import { CheckedIcon } from "../assets/icons";
+import { CheckedIcon, DoneIcon } from "../assets/icons";
 
 export const getMonth = (date: string) => {
     const [_day, month, _year] = date.split(".");
@@ -24,6 +24,7 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
     const [cookies] = useCookies(["token"]);
     const [amount, setAmount] = useState("");
     const [err, setErr] = useState("");
+    const [done, setDone] = useState(false);
     const [show, setShow] = useState(false);
     const queryClient = useQueryClient();
     const [months, setMonths] = useState<{ period: number; sum: number }[]>([]);
@@ -43,21 +44,20 @@ const SondirishModal = ({type, setModal}: {type: "next" | "any" | "months", setM
         queryKey: ['debt-sondirish'],
         queryFn: () => instance.get(`/debt/${id}`, {headers: { Authorization: `Bearer ${cookies.token}` }}).then(res => res.data).catch(err => {return toast.error(err.response.data.message)}),
     })
-    
+
     function handlePayment() {
         let data:any = {
             debtId: id
         }
         if(type == "next"){
-            instance.post("/payments/one-month-pay", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((res) => { toast.success(`Nasiya nuvoffaqiyatli so‘ndirildi (${getMonth(res.data.data.endDate)} oyi uchun)`); queryClient.invalidateQueries(); setModal(false);}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
+            instance.post("/payments/one-month-pay", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((res) => { setDone(true); queryClient.invalidateQueries()}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
         }else if(type == "any"){
             data.amount = +amount.replace(/\s/g, "")
-            instance.post("/payments/pay-any-sum", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((_res) => { toast.success(`Nasiya nuvoffaqiyatli so‘ndirildi. Summa- ${formatNumber(amount)} sum`); queryClient.invalidateQueries(); setModal(false);}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
+            instance.post("/payments/pay-any-sum", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((_res) => {setDone(true); queryClient.invalidateQueries()}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
         }else if(type == "months"){
             data.monthsToPay = months.map((item) => item.period)
-            instance.post("/payments/pay-for-months", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((res) => { toast.success(res.data.message); queryClient.invalidateQueries(); setModal(false);}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
+            instance.post("/payments/pay-for-months", data, {headers: { Authorization: `Bearer ${cookies.token}`,},}).then((res) => {setDone(true); queryClient.invalidateQueries()}).catch((err) => {  toast.error("Xatolik yuz berdi: " + err.response.data.message);});
         }
-        setModal(false)
     }
 
     const closeModal = () => {
@@ -151,22 +151,36 @@ const monthsContent = (
 
 );
 
+const donePage = (
+    <div className={`fixed z-[11] inset-0 bg-white backdrop-blur-[4px] flex flex-col items-center justify-center transition-opacity duration-300${show ? "opacity-100" : "opacity-0"}`}>
+        <div className="flex flex-col items-center space-y-[10px]">
+            <DoneIcon/>
+            <Heading tag="h2" classList="!font-bold !text-[20px] !text-[#3478F7]">Ajoyib</Heading>
+            <Text classList="!text-black/80">Muvaffaqiyatli so‘ndirildi</Text>
+        </div>
+        <CustomButton classList="!w-[360px] mt-[100px]" onClick={closeModal}>Bosh sahifa</CustomButton>
+    </div>
+) 
+
 
 
     
     return (
-        <div className={`fixed z-[11] inset-0 backdrop-filter bg-black/40 backdrop-blur-[4px] flex items-end justify-center transition-opacity duration-300${show ? "opacity-100" : "opacity-0"}`}>
-  <div className={`bg-white space-y-[30px] ${type == "months" ? "h-[550px]" : "h-[400px]"}  w-[400px] rounded-t-[20px] relative p-[20px]  transform transition-all duration-300 ${show ? "translate-y-0" : "translate-y-full"}`}>
-    <div onClick={closeModal} className="bg-white cursor-pointer rounded-full absolute w-[40px] h-[40px] flex items-center justify-center top-[-50px] !text-[20px] right-0">
-      <CloseOutlined />
-    </div>
-    <Heading tag="h1" classList="!font-bold !text-[20px]" children={heading[type]} />
-    {type === "next" && nextContent}
-    {type === "any" && anyContent}
-    {type === "months" && monthsContent}
-  </div>
-</div>
-
+        <div className="relative">
+        {done ? donePage : 
+            <div className={`fixed z-[11] inset-0 backdrop-filter bg-black/40 backdrop-blur-[4px] flex items-end justify-center transition-opacity duration-300${show ? "opacity-100" : "opacity-0"}`}>
+                <div className={`bg-white space-y-[30px] ${type == "months" ? "h-[550px]" : "h-[400px]"}  w-[400px] rounded-t-[20px] relative p-[20px]  transform transition-all duration-300 ${show ? "translate-y-0" : "translate-y-full"}`}>
+                    <div onClick={closeModal} className="bg-white cursor-pointer rounded-full absolute w-[40px] h-[40px] flex items-center justify-center top-[-50px] !text-[20px] right-0">
+                        <CloseOutlined />
+                    </div>
+                    <Heading tag="h1" classList="!font-bold !text-[20px]" children={heading[type]} />
+                    {type === "next" && nextContent}
+                    {type === "any" && anyContent}
+                    {type === "months" && monthsContent}
+                </div>
+            </div>
+        }
+        </div>
   )
 }
 
