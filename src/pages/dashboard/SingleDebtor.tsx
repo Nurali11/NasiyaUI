@@ -65,6 +65,7 @@ const SingleDebtor = () => {
 
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["single-debtor", id] })
+    queryClient.invalidateQueries({ queryKey: ["debt-history"] })
   },
 })
 
